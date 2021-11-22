@@ -1,1 +1,139 @@
-Hello World
+<!DOCTYPE html>
+<html meta charset="UTF-8">
+    <head>
+        <title>ESP32</title>
+        <style>
+            .gauge {
+                width: 100%;
+                max-width: 250px;
+                font-family: "Roboto", sans-serif;
+                font-size: 32px;
+                color: #004033;
+            }
+
+            .gauge__body {
+                width: 100%;
+                height: 0;
+                padding-bottom: 50%;
+                background: #b4c0be;
+                position: relative;
+                border-top-left-radius: 100% 200%;
+                border-top-right-radius: 100% 200%;
+                overflow: hidden;
+            }
+
+            .gauge__fill {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: inherit;
+                height: 100%;
+                background: #009578;
+                transform-origin: center top;
+                transform: rotate(0.25turn);
+                transition: transform 0.2s ease-out;
+            }
+
+            .gauge__cover {
+                width: 75%;
+                height: 150%;
+                background: #ffffff;
+                border-radius: 50%;
+                position: absolute;
+                top: 25%;
+                left: 50%;
+                transform: translateX(-50%);
+
+                /* Text */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding-bottom: 25%;
+                box-sizing: border-box;
+            }
+
+        </style>
+        <script>
+            function makeid(length) {
+                var result           = '';
+                var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+                var charactersLength = characters.length;
+                for ( var i = 0; i < length; i++ ) {
+                    result += characters.charAt(Math.floor(Math.random() * 
+                    charactersLength));
+                }
+                return result;
+            }
+            function setGaugeValue(id, min, max, value, symbol) {
+                const gauge = document.querySelector('#'+id);
+                if (value < min || max < min || value > max) {
+                    return;
+                    }
+                const scale = max - min;
+                const realValue = (value-min)/scale;
+                color = '#009578'
+                if(realValue > 0.70)
+                    color ='orange';
+                if(realValue > 0.90)
+                    color = 'red';
+                const filler = gauge.querySelector(".gauge__fill"); 
+
+                filler.style.transform = `rotate(${
+                    realValue / 2
+                }turn)`;
+                
+                filler.style.background = color; 
+                gauge.querySelector(".gauge__cover").textContent = value+symbol;
+            }
+            function createGauge(min,max,value,symbol){
+                const id = makeid(7);
+
+                var gaugeDiv = document.createElement('div');
+                gaugeDiv.id =id;
+                gaugeDiv.className = "gauge";
+
+
+                var gauge_body = document.createElement('div');
+                gauge_body.className = "gauge__body";
+
+                gaugeDiv.appendChild(gauge_body);
+
+                var gauge_fill = document.createElement('div');
+                gauge_fill.className = "gauge__fill";
+
+                var gauge_cover = document.createElement('div');
+                gauge_cover.className = "gauge__cover"
+
+                gauge_body.appendChild(gauge_fill);
+                gauge_body.appendChild(gauge_cover);
+
+                document.body.appendChild(gaugeDiv);
+
+                
+
+                setGaugeValue(id,min,max,value,symbol);
+                return id;
+            }
+        </script>
+    </head>
+    <body>
+        <script>
+            var gauge1 = createGauge(-20,60,20,'\u00B0');
+            var gauge2 = createGauge(0,100,80,'\u00B0');
+            var gauge3 = createGauge(0,100,20,'%');
+            var gauge4 = createGauge(0,100,45,'%');
+            var gauge5 = createGauge(0,100,76,'%');
+        </script>
+        <br>
+        <br>
+        <button onclick="setGaugeValue(gauge1,-20,60,40,'\u00B0')">40</button>
+        <br>
+        <button onclick="setGaugeValue(gauge2,0,100,85,'\u00B0')">85</button>
+        <br>
+        <button onclick="setGaugeValue(gauge1,-20,60,10,'\u00B0')">10</button>
+        <br>
+        <button onclick="setGaugeValue(gauge1,-20,60,0,'\u00B0')">0</button>
+        <br>
+        <button onclick="setGaugeValue(gauge2,0,100,59,'\u00B0')">59</button>
+    </body>
+</html>
